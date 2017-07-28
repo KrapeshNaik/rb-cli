@@ -1,0 +1,80 @@
+const inquirer = require('inquirer'),
+    chalk = require('chalk'),
+    spinner = require('./spinner'),
+    git = require('git-cli').Repository,
+    questionnaire = require('./questionnaire');
+
+const vueTwoStarterKitRepo = 'https://github.com/doabit/vue-ssr-starter-kit.git';
+
+const vueTwoStarterKit = () => {
+    console.log('\n');
+
+    let dirName = [{
+        name: 'directory',
+        type: 'input',
+        message: `${chalk.gray('Directory path? [absolute path]\n')}`,
+        validate: value => {
+            if (value.length) {
+                return true;
+            } else {
+                return 'absolute path required';
+            }
+        }
+    }];
+
+    inquirer
+        .prompt(dirName)
+        .then(answers => {
+            // console.log(`${chalk.green('\n\n?')} ${chalk.bold.gray('git credentials')}`);
+
+            // clone
+            git
+                .clone(vueTwoStarterKitRepo, answers.directory)
+                .then(repo => {
+                    console.log(`${chalk.green('repository cloned\n')}`);
+                    console.log(`${chalk.gray('To start building..')}`);
+                    console.log(`${chalk.gray('1. cd into ' + answers.directory)}`);
+                    console.log(`${chalk.gray('2. execute npm install')}`);
+                    console.log(`${chalk.gray('3. execute npm run build')}`);
+                    console.log(`${chalk.gray('4. execute npm start')}`);
+                    console.log(`${chalk.gray('\nFor complete info visit: https://github.com/developit/preact-boilerplate\n\n')}`);
+
+                    let continueOptions = [{
+                        name: 'create',
+                        type: 'list',
+                        message: `${chalk.gray('Checkout another repo?\n\n')}`,
+                        choices: [
+                            'Yes',
+                            'No'
+                        ]
+                    }];
+
+                    inquirer
+                        .prompt(continueOptions)
+                        .then(answers => {
+                            switch (answers.create) {
+                                case 'Yes':
+                                    console.log(`${chalk.bold.gray('Exiting...\n')}`);
+                                    break;
+
+                                case 'No':
+                                    console.log(`${chalk.gray('Exiting...\n')}`);
+                                    break;
+
+                                default:
+                                    console.log('Invalid selection. Exiting...');
+                                    break;
+                            }
+                        });
+                })
+                .catch(e => {
+                    console.log(e);
+                })
+        });
+};
+
+let repoInputs = repoName => {
+
+}
+
+module.exports = vueTwoStarterKit;
